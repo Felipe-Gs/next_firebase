@@ -9,7 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
+    "@firebase/app": "^0.9.5",
+    "@firebase/auth": "^0.21.5",
+    "@mui/material": "^5.11.15",
+    "firebase": "^9.18.0",
     "next": "13.2.4",
+    "next-firebase-auth": "^0.15.0",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   }
