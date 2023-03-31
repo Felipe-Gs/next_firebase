@@ -1,6 +1,10 @@
-import React from "react";
-
-const Carditem = ({ titulo, tarefa }) => {
+import React, { useState } from "react";
+import { Switch } from "@mui/material";
+const Carditem = ({ titulo, tarefa, status, handleChecked }) => {
+  const [checked, setChecked] = useState(false);
+  // const handleChecked = () => {
+  //   setChecked(!checked);
+  // };
   return (
     <div
       style={{
@@ -18,7 +22,13 @@ const Carditem = ({ titulo, tarefa }) => {
         <p>{titulo}</p>
         <p>{tarefa}</p>
       </div>
-      <p style={{ marginRight: "10px" }}>Status</p>
+      <div>
+        <Switch
+          checked={status}
+          onChange={handleChecked}
+          inputProps={{ "aria-label": "controlled" }}
+        />
+      </div>
     </div>
   );
 };

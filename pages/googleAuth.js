@@ -1,5 +1,5 @@
 import Head from "next/head";
-import style from "../styles/Home.module.css";
+import { useRouter } from "next/router";
 import { initializeApp } from "firebase/app";
 import {
   collection,
@@ -38,10 +38,11 @@ const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
 
 export default function Home() {
+  const router = useRouter();
+  const [dadosFiltrados, setDadosFiltrados] = useState([]);
   const [tarefa, setTarefa] = useState("");
   const [titulo, setTitulo] = useState("");
   const { dados } = useAuth();
-  const [users, setUsers] = useState([]);
   const [tasks, setTasks] = useState([]);
   const db = getFirestore(firebaseApp);
   // const userCollectionRef = collection(db, "next");
@@ -57,6 +58,7 @@ export default function Home() {
       description: `${tarefa}`,
       title: `${titulo}`,
       date: new Date(),
+      status: false,
       userId: dados.uid,
     };
 
@@ -73,15 +75,17 @@ export default function Home() {
       const data = await getDocs(tasksCollectionRef);
       const tasks = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
       setTasks(tasks);
-      console.log(tasks);
+      setDadosFiltrados(tasks.filter((item) => item.userId === dados.uid));
     } catch (error) {
       console.log(error);
     }
   };
   useEffect(() => {
+    if (!dados.email) {
+      router.push("/");
+    }
     buscarTasks();
-  }, [dados]);
-  const filterData = tasks.filter((item) => item.userId === dados.uid);
+  }, [dados, tasks]);
 
   return (
     <>
@@ -124,10 +128,8 @@ export default function Home() {
         </div>
         <div
           style={{
-            // backgroundColor: "grey",
             width: "100%",
             alignItems: "center",
-            // justifyContent: "center",
             display: "flex",
             flexDirection: "column",
             padding: "20px",
@@ -164,31 +166,22 @@ export default function Home() {
             </Button>
           </div>
           <div style={{ width: "100%", height: "100%", overflow: "auto" }}>
-            {filterData &&
-              filterData.map((item, index) => {
+            {dadosFiltrados &&
+              dadosFiltrados.map((item, index) => {
                 return (
                   <Carditem
                     key={index}
                     titulo={item.title}
                     tarefa={item.description}
+                    status={item.status}
+                    handleChecked={() => !item.status}
                   />
                 );
               })}
           </div>
-          {console.log(filterData)}
+          {/* {console.log(dadosFiltrados)} */}
         </div>
       </div>
-      {/* <h1>Felipe gomes</h1>
-      <button onClick={() => adicionarTarefa(tarefa)}>add task</button>
-      <button onClick={handleGoogleLogin}>Login com Google</button>
-      <p>{users.uid}</p>
-      <button onClick={handleAddTask}>Adicionar Tarefa</button>
-      <button onClick={buscarTasks}>Buscar tasks</button> */}
-      {/* {tasks &&
-        tasks.map((item) => {
-          return <p>{item.userId}</p>;
-        })}
-      {console.log(filterData)} */}
     </>
   );
 }
